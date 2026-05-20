@@ -98,7 +98,7 @@ class Namek_WA_API {
             return null;
         }
 
-        $country_code = ltrim(get_option('namek_wa_country_code', '91'), '+0');
+        $country_code = ltrim(get_option('namek_wa_country_code', '91') ?: '91', '+0');
 
         if (strlen($digits) === 10) {
             return $country_code . $digits;

@@ -184,18 +184,18 @@ class Namek_WA_Settings {
                     <input type="text" name="namek_wa_group_id"
                       value="<?php echo esc_attr(get_option('namek_wa_group_id')); ?>"
                       class="nw-input" placeholder="120363012345678901@g.us">
-                    <span class="nw-hint">Group JID — find it via GET /api/v1/groups on your Namek server</span>
+                    <span class="nw-hint">Group JID — find it via GET /api/v1/groups on your Namek server. Always enter the full JID including <code style="font-size:10px">@g.us</code></span>
                   </div>
                   <div class="nw-field">
                     <label class="nw-label">Admin Phone</label>
                     <input type="text" name="namek_wa_admin_phone"
                       value="<?php echo esc_attr(get_option('namek_wa_admin_phone')); ?>"
                       class="nw-input" placeholder="919876543210">
-                    <span class="nw-hint">Receives new order &amp; low stock alerts — include country code, no +</span>
+                    <span class="nw-hint">Receives new order &amp; low stock alerts. Always include country code with no + or spaces — e.g. <strong>91</strong>9876543210 for India, <strong>1</strong>4155551234 for US</span>
                   </div>
                 </div>
 
-                <div class="nw-field-row nw-field-row-narrow">
+                <div class="nw-field-row">
                   <div class="nw-field">
                     <label class="nw-label">API Key</label>
                     <input type="password" name="namek_wa_api_key"
@@ -203,13 +203,6 @@ class Namek_WA_Settings {
                       class="nw-input" placeholder="Your unit API key from Namek dashboard"
                       autocomplete="new-password">
                     <span class="nw-hint">Keep this secret — provided by Namek</span>
-                  </div>
-                  <div class="nw-field nw-field-xs">
-                    <label class="nw-label">Country Code</label>
-                    <input type="text" name="namek_wa_country_code"
-                      value="<?php echo esc_attr(get_option('namek_wa_country_code', '91')); ?>"
-                      class="nw-input" placeholder="91">
-                    <span class="nw-hint">Prepended to 10-digit numbers</span>
                   </div>
                 </div>
 
@@ -311,7 +304,6 @@ class Namek_WA_Settings {
           --rs:   8px;
           font-family: 'Inter', -apple-system, sans-serif;
           color: var(--tx);
-          max-width: 960px;
         }
 
         /* Hero */
@@ -327,7 +319,7 @@ class Namek_WA_Settings {
           padding: 20px 28px;
         }
         .nw-hero-brand { display: flex; align-items: center; gap: 14px; }
-        .nw-logo-img { height: 44px; width: auto; object-fit: contain; }
+        .nw-logo-img { height: 62px; width: auto; object-fit: contain; }
         .nw-hero-title {
           font-family: 'Outfit', sans-serif;
           font-size: 20px; font-weight: 700;
@@ -382,7 +374,6 @@ class Namek_WA_Settings {
           gap: 16px;
           margin-bottom: 16px;
         }
-        .nw-field-row-narrow { grid-template-columns: 1fr 140px; }
         .nw-field { display: flex; flex-direction: column; gap: 5px; }
         .nw-label {
           display: block;
