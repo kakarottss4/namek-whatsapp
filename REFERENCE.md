@@ -123,21 +123,54 @@ Admin triggers use the `namek_wa_admin_phone` setting.
 
 ---
 
-## Distribution & Build Process
+## GitHub Repository
+
+**URL:** https://github.com/kakarottss4/namek-whatsapp
+**Visibility:** Public (proprietary licence — no open source licence file)
+**Constant in plugin:** `define('NAMEK_WA_GITHUB_REPO', 'kakarottss4/namek-whatsapp');`
+
+The repo contains source code only. The zip is **never committed** — it is attached as an asset to each GitHub Release.
+
+---
+
+## Release Workflow (how to ship an update)
 
 ```bash
-# Make changes to plugin files
-# Bump version in namek-whatsapp/namek-whatsapp.php → Version: x.x.x
-
 cd /Users/santosh/Desktop/Projects/whatsapp/whatsapp-wp-plugin
+
+# 1. Make your changes to the plugin files
+
+# 2. Bump version in TWO places:
+#      namek-whatsapp/namek-whatsapp.php  → Version: x.x.x
+#                                         → define('NAMEK_WA_VERSION', 'x.x.x');
+
+# 3. Rebuild the zip
 bash build.sh
-# → produces namek-whatsapp.zip
+
+# 4. Commit, tag, and push
+git add .
+git commit -m "vX.X.X — description of changes"
+git tag vX.X.X
+git push origin main --tags
+
+# 5. Go to GitHub → Releases → Draft a new release
+#    → Choose tag vX.X.X
+#    → Title: vX.X.X
+#    → Attach namek-whatsapp.zip as a release asset
+#    → Publish release
 ```
 
-**Client install/update steps:**
-1. WP Admin → Plugins → Deactivate → Delete (old version)
-2. Plugins → Add New → Upload Plugin → choose zip → Install → Activate
-3. Settings are preserved (stored in DB, not plugin files)
+All client WordPress sites will show the "Update available" banner on their next daily check. Client clicks Update — done. Settings are preserved.
+
+---
+
+## Distribution & Build Process
+
+**For manual distribution (new clients before they set up auto-update):**
+1. Run `bash build.sh` → get `namek-whatsapp.zip`
+2. Send zip to client
+3. WP Admin → Plugins → Add New → Upload Plugin → Install → Activate
+4. Settings are preserved on future updates (stored in WP database, not plugin files)
 
 ---
 
@@ -154,63 +187,45 @@ bash build.sh
 
 ---
 
-## Planned / Future Builds
+## Completed Builds
 
-### 1. Rename plugin — drop "for WooCommerce"
-- Plugin name: `Namek WhatsApp` (not "for WooCommerce")
-- WooCommerce becomes one module inside a broader plugin
-- Reason: plugin will expand to other WP integrations — no need to create a separate plugin each time
+### ✓ Renamed plugin
+Plugin name is `Namek WhatsApp` (v1.1.0). WooCommerce is one module inside a broader plugin.
 
-### 2. Restructure includes into modules
+### ✓ Restructured into modules
 ```
 includes/
-  class-api.php           ← shared, stays here
-  class-settings.php      ← shared, stays here
+  class-api.php               ← shared
+  class-settings.php          ← shared
+  class-updater.php           ← GitHub auto-updater
   modules/
-    class-woocommerce.php ← current triggers, moved here
-    class-contact-form-7.php  ← future
-    class-gravity-forms.php   ← future
-    class-custom.php          ← future (manual send, custom hooks)
-```
-Each module only loads if the relevant plugin is active (check with `class_exists` or `is_plugin_active`).
-
-### 3. GitHub auto-updater
-- Create a dedicated GitHub repo: `namek-whatsapp-wp` (can be private)
-- Plugin hooks into WP update checker, calls GitHub releases API
-- Compares installed version vs latest GitHub release tag
-- If newer: WordPress shows "Update available" banner → client clicks Update → auto-installs
-
-**Release workflow once built:**
-```bash
-# 1. Bump version in namek-whatsapp.php
-# 2. Build zip
-bash build.sh
-# 3. Tag and push to GitHub
-git tag v1.1.0 && git push origin v1.1.0
-# 4. Create GitHub Release, attach namek-whatsapp.zip
-# → all client sites get the update banner overnight
+    class-woocommerce.php     ← WooCommerce triggers
 ```
 
-**Implementation:** ~30 lines of PHP using the `plugins_api` and `pre_set_site_transient_update_plugins` filters, pointing at `https://api.github.com/repos/namek/namek-whatsapp-wp/releases/latest`.
+### ✓ GitHub auto-updater
+Built in `includes/class-updater.php`. Hooks into WP update checker, calls GitHub releases API every 12 hours. Clients see the standard WP "Update available" banner.
 
-### 4. Group message triggers
-- Add group_id field in settings (client enters their WA group JID)
-- New triggers: "New order → notify group", "Daily summary → notify group"
-- Already have `Namek_WA_API::send_group()` ready in class-api.php
-- Settings already have `namek_wa_group_endpoint` field
+### ✓ Group message trigger
+`new_order_group` trigger — sends new order notification to a WhatsApp group. Group JID configured in settings under Connection → WhatsApp Group ID.
 
-### 5. Additional WP integrations (future modules)
+### ✓ Namek brand UI
+Settings page uses Namek's full design system: Inter/Outfit fonts, `#3d0000` primary, `#c25558` accent, rose backgrounds, matching card/input/button styles.
+
+---
+
+## Future Builds
+
+### Additional WP integrations (future modules)
+Each added as a new file under `includes/modules/` — only loads if the relevant plugin is active:
 - **Contact Form 7** — send WA on form submit, map form fields to placeholders
 - **Gravity Forms** — same concept, wider adoption in premium WP sites
-- **WooCommerce Bookings** — appointment confirmed, reminder 24h before, cancellation
-- **User registration (core WP)** — welcome message outside of WooCommerce flow
-- **Custom trigger builder** — let client define their own hook + message without code
+- **WooCommerce Bookings** — confirmed, reminder 24h before, cancellation
+- **Custom trigger builder** — client defines their own hook + message without code
 
-### 6. Client self-service API key rotation
-- Currently: admin must rotate key from Namek dashboard, give new key to client
-- Plan: add a "Rotate API Key" button in the Namek unit's setup portal
-- New key generated server-side, shown once — client updates plugin settings
-- No dependency on Namek admin for a security-sensitive action
+### Client self-service API key rotation
+- Currently: admin rotates key from Namek dashboard, gives new key to client manually
+- Plan: "Rotate API Key" button in the Namek unit's setup portal
+- New key generated server-side, shown once — client updates plugin settings themselves
 
 ---
 
