@@ -125,8 +125,9 @@ class Namek_WA_Settings {
 
     public static function render_page() {
         if (!current_user_can('manage_options')) return;
-        $triggers = self::get_triggers();
-        $saved    = !empty($_GET['settings-updated']);
+        $triggers  = self::get_triggers();
+        $saved     = !empty($_GET['settings-updated']);
+        $logo_url  = NAMEK_WA_URL . 'assets/namek.png';
         ?>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -136,12 +137,7 @@ class Namek_WA_Settings {
           <div class="nw-hero">
             <div class="nw-hero-inner">
               <div class="nw-hero-brand">
-                <div class="nw-logo">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="white"/>
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.522 5.854L.054 23.293a.75.75 0 00.921.921l5.44-1.468A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" fill="white" opacity=".25"/>
-                  </svg>
-                </div>
+                <img src="<?php echo esc_url($logo_url); ?>" alt="Namek" class="nw-logo-img">
                 <div>
                   <h1 class="nw-hero-title">Namek WhatsApp</h1>
                   <p class="nw-hero-sub">WooCommerce notifications via WhatsApp</p>
@@ -158,7 +154,7 @@ class Namek_WA_Settings {
           <form method="post" action="options.php">
             <?php settings_fields('namek_wa_settings'); ?>
 
-            <!-- Connection -->
+            <!-- ── Connection ───────────────────────────────── -->
             <div class="nw-card">
               <div class="nw-card-header">
                 <h2 class="nw-card-title">Connection</h2>
@@ -188,26 +184,7 @@ class Namek_WA_Settings {
                     <input type="text" name="namek_wa_group_id"
                       value="<?php echo esc_attr(get_option('namek_wa_group_id')); ?>"
                       class="nw-input" placeholder="120363012345678901@g.us">
-                    <span class="nw-hint">Group JID from your Namek dashboard — used for group notification triggers</span>
-                  </div>
-                  <div class="nw-field" style="display:flex;align-items:flex-end">
-                    <div style="padding:10px 14px;background:var(--nw-bg-soft);border-radius:var(--nw-radius-sm);border:1px solid var(--nw-border);font-size:12px;color:var(--nw-text-muted);line-height:1.6">
-                      Find your group ID in the Namek dashboard under your unit's group list, or via<br>
-                      <code style="font-size:11px;background:var(--nw-bg-rose-deep);color:var(--nw-primary);padding:1px 5px;border-radius:3px">GET /api/v1/groups</code>
-                    </div>
-                  </div>
-                </div>
-
-                </div>
-
-                <div class="nw-field-row">
-                  <div class="nw-field">
-                    <label class="nw-label">API Key</label>
-                    <input type="password" name="namek_wa_api_key"
-                      value="<?php echo esc_attr(get_option('namek_wa_api_key')); ?>"
-                      class="nw-input" placeholder="Your unit API key from Namek dashboard"
-                      autocomplete="new-password">
-                    <span class="nw-hint">Keep this secret — provided by Namek</span>
+                    <span class="nw-hint">Group JID — find it via GET /api/v1/groups on your Namek server</span>
                   </div>
                   <div class="nw-field">
                     <label class="nw-label">Admin Phone</label>
@@ -218,20 +195,28 @@ class Namek_WA_Settings {
                   </div>
                 </div>
 
-                <div class="nw-field-row">
-                  <div class="nw-field" style="max-width:200px">
-                    <label class="nw-label">Default Country Code</label>
+                <div class="nw-field-row nw-field-row-narrow">
+                  <div class="nw-field">
+                    <label class="nw-label">API Key</label>
+                    <input type="password" name="namek_wa_api_key"
+                      value="<?php echo esc_attr(get_option('namek_wa_api_key')); ?>"
+                      class="nw-input" placeholder="Your unit API key from Namek dashboard"
+                      autocomplete="new-password">
+                    <span class="nw-hint">Keep this secret — provided by Namek</span>
+                  </div>
+                  <div class="nw-field nw-field-xs">
+                    <label class="nw-label">Country Code</label>
                     <input type="text" name="namek_wa_country_code"
                       value="<?php echo esc_attr(get_option('namek_wa_country_code', '91')); ?>"
                       class="nw-input" placeholder="91">
-                    <span class="nw-hint">Prepended to 10-digit numbers (91 = India)</span>
+                    <span class="nw-hint">Prepended to 10-digit numbers</span>
                   </div>
                 </div>
 
                 <div class="nw-test-bar">
                   <span class="nw-test-label">Test connection</span>
-                  <input type="text" id="namek-test-phone" class="nw-input" style="width:190px" placeholder="Phone e.g. 919876543210">
-                  <input type="text" id="namek-test-message" class="nw-input" style="width:220px" placeholder="Hello from Namek!">
+                  <input type="text" id="namek-test-phone" class="nw-input nw-test-input" placeholder="Phone e.g. 919876543210">
+                  <input type="text" id="namek-test-message" class="nw-input nw-test-msg" placeholder="Hello from Namek!">
                   <button type="button" class="nw-btn" id="namek-test-send">Send Test</button>
                   <span id="namek-test-result"></span>
                 </div>
@@ -239,170 +224,156 @@ class Namek_WA_Settings {
               </div>
             </div>
 
-            <!-- Triggers -->
+            <!-- ── Triggers ─────────────────────────────────── -->
             <div class="nw-card">
-              <div class="nw-card-header">
+              <div class="nw-card-header nw-card-header-flex">
                 <h2 class="nw-card-title">WooCommerce Triggers</h2>
-              </div>
-              <div class="nw-card-body">
-
                 <div class="nw-placeholders">
-                  <span class="nw-ph-label">Placeholders:</span>
                   <?php foreach (['{name}','{full_name}','{order_id}','{order_total}','{order_status}','{product_list}','{site_name}','{note}','{product_name}','{stock_qty}'] as $ph): ?>
                   <code class="nw-ph"><?php echo esc_html($ph); ?></code>
                   <?php endforeach; ?>
                 </div>
+              </div>
+              <div class="nw-card-body nw-card-body-triggers">
 
-                <div class="nw-trigger-list">
-                  <?php foreach ($triggers as $key => $trigger):
-                    $enabled  = get_option("namek_wa_{$key}_enabled", '');
-                    $template = get_option("namek_wa_{$key}_template", $trigger['default']);
-                    $is_admin = $trigger['target'] === 'admin';
-                    $is_group = $trigger['target'] === 'group';
-                  ?>
-                  <div class="nw-trigger-row<?php echo ($is_admin || $is_group) ? ' nw-trigger-admin' : ''; ?>">
-                    <div class="nw-trigger-meta">
-                      <div class="nw-trigger-top">
-                        <label class="nw-toggle">
-                          <input type="checkbox"
-                            name="namek_wa_<?php echo esc_attr($key); ?>_enabled"
-                            value="1" <?php checked($enabled, '1'); ?>>
-                          <span class="nw-toggle-track"><span class="nw-toggle-thumb"></span></span>
-                        </label>
-                        <strong class="nw-trigger-name"><?php echo esc_html($trigger['label']); ?></strong>
-                      </div>
-                      <p class="nw-trigger-desc"><?php echo esc_html($trigger['desc']); ?></p>
-                      <?php if ($is_group): ?>
-                        <span class="nw-badge nw-badge-group">&#x2192; WhatsApp Group</span>
-                      <?php elseif ($is_admin): ?>
-                        <span class="nw-badge nw-badge-admin">&#x2192; Admin phone</span>
-                      <?php else: ?>
-                        <span class="nw-badge nw-badge-customer">&#x2192; Customer</span>
-                      <?php endif; ?>
-                    </div>
-                    <div class="nw-trigger-template">
-                      <textarea
-                        name="namek_wa_<?php echo esc_attr($key); ?>_template"
-                        rows="3"
-                        class="nw-input nw-textarea"
-                      ><?php echo esc_textarea($template); ?></textarea>
-                    </div>
-                    <div class="nw-trigger-action">
-                      <button type="button" class="nw-btn nw-btn-sm nw-trigger-test" data-key="<?php echo esc_attr($key); ?>">Test</button>
+                <?php foreach ($triggers as $key => $trigger):
+                  $enabled  = get_option("namek_wa_{$key}_enabled", '');
+                  $template = get_option("namek_wa_{$key}_template", $trigger['default']);
+                  $is_admin = $trigger['target'] === 'admin';
+                  $is_group = $trigger['target'] === 'group';
+                  $badge_class = $is_group ? 'nw-badge-group' : ($is_admin ? 'nw-badge-admin' : 'nw-badge-customer');
+                  $badge_text  = $is_group ? '&#x2192; Group' : ($is_admin ? '&#x2192; Admin' : '&#x2192; Customer');
+                ?>
+                <div class="nw-tc <?php echo ($is_admin || $is_group) ? 'nw-tc-muted' : ''; ?>">
+                  <div class="nw-tc-left">
+                    <label class="nw-toggle" title="Enable / disable">
+                      <input type="checkbox"
+                        name="namek_wa_<?php echo esc_attr($key); ?>_enabled"
+                        value="1" <?php checked($enabled, '1'); ?>>
+                      <span class="nw-toggle-track"><span class="nw-toggle-thumb"></span></span>
+                    </label>
+                    <div class="nw-tc-info">
+                      <div class="nw-tc-title"><?php echo esc_html($trigger['label']); ?></div>
+                      <div class="nw-tc-desc"><?php echo esc_html($trigger['desc']); ?></div>
+                      <span class="nw-badge <?php echo $badge_class; ?>"><?php echo $badge_text; ?></span>
                     </div>
                   </div>
-                  <?php endforeach; ?>
+                  <div class="nw-tc-right">
+                    <label class="nw-label" style="margin-bottom:5px">Message Template</label>
+                    <textarea
+                      name="namek_wa_<?php echo esc_attr($key); ?>_template"
+                      rows="3"
+                      class="nw-input nw-textarea"
+                    ><?php echo esc_textarea($template); ?></textarea>
+                    <div class="nw-tc-actions">
+                      <button type="button" class="nw-btn nw-btn-sm nw-trigger-test" data-key="<?php echo esc_attr($key); ?>">
+                        Send Test
+                      </button>
+                      <span class="namek-trigger-result"></span>
+                    </div>
+                  </div>
                 </div>
+                <?php endforeach; ?>
 
               </div>
             </div>
 
-            <div style="margin-bottom:24px">
-              <button type="submit" class="nw-btn nw-btn-primary">Save Settings</button>
+            <!-- Save -->
+            <div class="nw-save-row">
+              <button type="submit" class="nw-btn nw-btn-save">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Save Settings
+              </button>
             </div>
 
           </form>
         </div>
 
         <style>
-        /* ── Namek brand tokens ─────────────────────────────── */
+        /* ── Tokens ──────────────────────────────────────────── */
         .namek-wa-wrap {
-          --nw-primary:      #3d0000;
-          --nw-primary-lt:   #6b1a1a;
-          --nw-accent:       #c25558;
-          --nw-bg:           #fffffc;
-          --nw-bg-soft:      #fff7f7;
-          --nw-bg-rose:      #ffeded;
-          --nw-bg-rose-deep: #ffe0e0;
-          --nw-text:         #1a0a0a;
-          --nw-text-sec:     #7d6161;
-          --nw-text-muted:   #a89494;
-          --nw-green:        #2d8a4e;
-          --nw-green-bg:     #e8f5ee;
-          --nw-blue:         #2980b9;
-          --nw-blue-bg:      #e8f0fe;
-          --nw-border:       #f0e0e0;
-          --nw-radius:       12px;
-          --nw-radius-sm:    8px;
+          --p:    #3d0000;
+          --p-lt: #6b1a1a;
+          --acc:  #c25558;
+          --bg:   #fffffc;
+          --bgs:  #fff7f7;
+          --bgr:  #ffeded;
+          --bgrd: #ffe0e0;
+          --tx:   #1a0a0a;
+          --txs:  #7d6161;
+          --txm:  #a89494;
+          --grn:  #2d8a4e;
+          --grnb: #e8f5ee;
+          --blu:  #2980b9;
+          --blub: #e8f0fe;
+          --bdr:  #f0e0e0;
+          --r:    12px;
+          --rs:   8px;
           font-family: 'Inter', -apple-system, sans-serif;
-          color: var(--nw-text);
-          max-width: 980px;
+          color: var(--tx);
+          max-width: 960px;
         }
 
         /* Hero */
         .nw-hero {
-          background: linear-gradient(135deg, var(--nw-bg-rose) 0%, var(--nw-bg-rose-deep) 100%);
-          border-radius: var(--nw-radius);
+          background: linear-gradient(135deg, var(--bgr) 0%, var(--bgrd) 100%);
+          border-radius: var(--r);
           margin: 16px 0 20px;
-          overflow: hidden;
         }
         .nw-hero-inner {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 22px 28px;
+          padding: 20px 28px;
         }
         .nw-hero-brand { display: flex; align-items: center; gap: 14px; }
-        .nw-logo {
-          width: 44px; height: 44px;
-          background: var(--nw-primary);
-          border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-        }
+        .nw-logo-img { height: 44px; width: auto; object-fit: contain; }
         .nw-hero-title {
           font-family: 'Outfit', sans-serif;
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--nw-primary) !important;
-          margin: 0 0 2px !important;
-          padding: 0 !important;
-          line-height: 1.2;
+          font-size: 20px; font-weight: 700;
+          color: var(--p) !important;
+          margin: 0 0 2px !important; padding: 0 !important;
         }
-        .nw-hero-sub { font-size: 13px; color: var(--nw-text-sec); margin: 0; }
+        .nw-hero-sub { font-size: 13px; color: var(--txs); margin: 0; }
         .nw-version-badge {
-          background: var(--nw-primary);
-          color: #fff;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 4px 12px;
-          border-radius: 20px;
-          letter-spacing: .5px;
+          background: var(--p); color: #fff;
+          font-size: 11px; font-weight: 600;
+          padding: 4px 12px; border-radius: 20px; letter-spacing: .5px;
         }
 
         /* Alert */
-        .nw-alert {
-          padding: 12px 16px;
-          border-radius: var(--nw-radius-sm);
-          font-size: 13px;
-          font-weight: 500;
-          margin-bottom: 16px;
-        }
-        .nw-alert-success { background: var(--nw-green-bg); color: var(--nw-green); border-left: 3px solid var(--nw-green); }
+        .nw-alert { padding: 12px 16px; border-radius: var(--rs); font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+        .nw-alert-success { background: var(--grnb); color: var(--grn); border-left: 3px solid var(--grn); }
 
-        /* Cards */
+        /* Card */
         .nw-card {
           background: #fff;
-          border: 1px solid var(--nw-border);
-          border-radius: var(--nw-radius);
+          border: 1px solid var(--bdr);
+          border-radius: var(--r);
           margin-bottom: 20px;
           box-shadow: 0 1px 4px rgba(61,0,0,.05);
           overflow: hidden;
         }
         .nw-card-header {
-          padding: 15px 24px;
-          border-bottom: 1px solid var(--nw-bg-rose);
-          background: var(--nw-bg-soft);
+          padding: 14px 24px;
+          border-bottom: 1px solid var(--bgr);
+          background: var(--bgs);
+        }
+        .nw-card-header-flex {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex-wrap: wrap;
         }
         .nw-card-title {
           font-family: 'Outfit', sans-serif !important;
-          font-size: 14px !important;
-          font-weight: 600 !important;
-          color: var(--nw-primary) !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          font-size: 14px !important; font-weight: 600 !important;
+          color: var(--p) !important;
+          margin: 0 !important; padding: 0 !important;
+          white-space: nowrap;
         }
-        .nw-card-body { padding: 20px 24px; }
+        .nw-card-body { padding: 22px 24px 24px; }
+        .nw-card-body-triggers { padding: 0; }
 
         /* Fields */
         .nw-field-row {
@@ -411,191 +382,159 @@ class Namek_WA_Settings {
           gap: 16px;
           margin-bottom: 16px;
         }
+        .nw-field-row-narrow { grid-template-columns: 1fr 140px; }
         .nw-field { display: flex; flex-direction: column; gap: 5px; }
         .nw-label {
-          font-size: 11px !important;
-          font-weight: 600 !important;
-          color: var(--nw-text-sec) !important;
-          text-transform: uppercase;
-          letter-spacing: .5px;
+          display: block;
+          font-size: 11px !important; font-weight: 600 !important;
+          color: var(--txs) !important;
+          text-transform: uppercase; letter-spacing: .5px;
           margin: 0 !important;
         }
-        .nw-hint { font-size: 11px; color: var(--nw-text-muted); }
+        .nw-hint { font-size: 11px; color: var(--txm); line-height: 1.4; }
 
-        /* Inputs — override WP defaults */
+        /* Inputs */
         .namek-wa-wrap .nw-input {
           padding: 9px 13px !important;
-          border: 2px solid var(--nw-bg-rose-deep) !important;
-          border-radius: var(--nw-radius-sm) !important;
+          border: 2px solid var(--bgrd) !important;
+          border-radius: var(--rs) !important;
           font-size: 13px !important;
           font-family: 'Inter', sans-serif !important;
-          color: var(--nw-text) !important;
-          background: var(--nw-bg) !important;
-          outline: none !important;
-          box-shadow: none !important;
+          color: var(--tx) !important;
+          background: var(--bg) !important;
+          outline: none !important; box-shadow: none !important;
           transition: border-color .2s, box-shadow .2s;
-          width: 100%;
-          box-sizing: border-box;
+          width: 100%; box-sizing: border-box;
         }
         .namek-wa-wrap .nw-input:focus {
-          border-color: var(--nw-accent) !important;
+          border-color: var(--acc) !important;
           box-shadow: 0 0 0 3px rgba(194,85,88,.1) !important;
         }
-        .nw-textarea { resize: vertical; min-height: 68px; }
+        .nw-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
         /* Test bar */
         .nw-test-bar {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid var(--nw-bg-rose);
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          margin-top: 16px; padding: 14px 0 4px;
+          border-top: 1px solid var(--bgr);
         }
         .nw-test-label {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--nw-text-sec);
-          text-transform: uppercase;
-          letter-spacing: .4px;
-          white-space: nowrap;
+          font-size: 11px; font-weight: 600; color: var(--txs);
+          text-transform: uppercase; letter-spacing: .4px; white-space: nowrap;
         }
+        .nw-test-input { width: 200px !important; }
+        .nw-test-msg   { width: 230px !important; }
         #namek-test-result { font-size: 13px; font-weight: 500; }
-        #namek-test-result.ok  { color: var(--nw-green); }
-        #namek-test-result.err { color: var(--nw-accent); }
+        #namek-test-result.ok  { color: var(--grn); }
+        #namek-test-result.err { color: var(--acc); }
 
-        /* Placeholders bar */
+        /* Placeholders in header */
         .nw-placeholders {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 5px;
-          margin-bottom: 16px;
-          padding: 10px 14px;
-          background: var(--nw-bg-soft);
-          border-radius: var(--nw-radius-sm);
-          border: 1px solid var(--nw-border);
-        }
-        .nw-ph-label {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--nw-text-muted);
-          text-transform: uppercase;
-          letter-spacing: .4px;
-          margin-right: 4px;
+          display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
         }
         .nw-ph {
-          font-size: 11px;
-          background: var(--nw-bg-rose-deep);
-          color: var(--nw-primary);
-          padding: 2px 7px;
-          border-radius: 4px;
+          font-size: 10px;
+          background: var(--bgrd); color: var(--p);
+          padding: 2px 6px; border-radius: 4px;
           font-family: 'Courier New', monospace;
         }
 
-        /* Trigger list */
-        .nw-trigger-list { display: flex; flex-direction: column; }
-        .nw-trigger-row {
-          display: grid;
-          grid-template-columns: 210px 1fr 58px;
-          gap: 14px;
-          align-items: start;
-          padding: 14px 0;
-          border-bottom: 1px solid var(--nw-bg-rose);
+        /* Trigger cards */
+        .nw-tc {
+          display: flex;
+          gap: 0;
+          border-bottom: 1px solid var(--bgr);
         }
-        .nw-trigger-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .nw-trigger-admin {
-          background: var(--nw-bg-soft);
-          border-radius: 8px;
-          padding: 12px 10px;
-          margin: 0 -10px;
+        .nw-tc:last-child { border-bottom: none; }
+        .nw-tc-muted { background: var(--bgs); }
+
+        .nw-tc-left {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 18px 20px;
+          width: 260px;
+          min-width: 260px;
+          border-right: 1px solid var(--bgr);
         }
-        .nw-trigger-top { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .nw-trigger-name { font-size: 13px; font-weight: 600; color: var(--nw-text); }
-        .nw-trigger-desc { font-size: 11px; color: var(--nw-text-muted); margin: 0 0 7px; line-height: 1.5; }
-        .nw-trigger-action { display: flex; align-items: flex-start; padding-top: 2px; }
+        .nw-tc-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .nw-tc-title { font-size: 13px; font-weight: 600; color: var(--tx); line-height: 1.3; }
+        .nw-tc-desc  { font-size: 11px; color: var(--txm); line-height: 1.5; }
+
+        .nw-tc-right {
+          flex: 1;
+          padding: 18px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          min-width: 0;
+        }
+        .nw-tc-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
 
         /* Badges */
         .nw-badge {
           display: inline-block;
-          font-size: 10px;
-          font-weight: 600;
-          padding: 2px 8px;
-          border-radius: 20px;
-          letter-spacing: .3px;
+          font-size: 10px; font-weight: 600;
+          padding: 2px 8px; border-radius: 20px; letter-spacing: .3px;
         }
-        .nw-badge-customer { background: var(--nw-green-bg);  color: var(--nw-green); }
-        .nw-badge-admin    { background: var(--nw-blue-bg);   color: var(--nw-blue); }
-        .nw-badge-group    { background: var(--nw-bg-rose-deep); color: var(--nw-primary); }
+        .nw-badge-customer { background: var(--grnb); color: var(--grn); }
+        .nw-badge-admin    { background: var(--blub); color: var(--blu); }
+        .nw-badge-group    { background: var(--bgrd); color: var(--p); }
 
         /* Toggle */
-        .nw-toggle { position: relative; display: inline-block; cursor: pointer; flex-shrink: 0; line-height: 1; }
+        .nw-toggle { position: relative; display: inline-block; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
         .nw-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
         .nw-toggle-track {
-          display: block;
-          width: 36px; height: 20px;
-          background: #d0c0c0;
-          border-radius: 20px;
-          transition: background .2s;
-          position: relative;
+          display: block; width: 38px; height: 22px;
+          background: #ddd; border-radius: 22px;
+          transition: background .2s; position: relative;
         }
         .nw-toggle-thumb {
-          position: absolute;
-          top: 3px; left: 3px;
-          width: 14px; height: 14px;
-          background: #fff;
-          border-radius: 50%;
+          position: absolute; top: 3px; left: 3px;
+          width: 16px; height: 16px;
+          background: #fff; border-radius: 50%;
           transition: transform .2s;
-          box-shadow: 0 1px 3px rgba(0,0,0,.2);
+          box-shadow: 0 1px 4px rgba(0,0,0,.2);
         }
-        .nw-toggle input:checked ~ .nw-toggle-track { background: var(--nw-accent); }
+        .nw-toggle input:checked ~ .nw-toggle-track { background: var(--acc); }
         .nw-toggle input:checked ~ .nw-toggle-track .nw-toggle-thumb { transform: translateX(16px); }
 
         /* Buttons */
         .namek-wa-wrap .nw-btn {
-          display: inline-flex !important;
-          align-items: center;
-          gap: 6px;
+          display: inline-flex !important; align-items: center; gap: 6px;
           padding: 8px 16px !important;
-          background: var(--nw-bg-rose-deep) !important;
-          color: var(--nw-primary) !important;
-          border: none !important;
-          border-radius: var(--nw-radius-sm) !important;
-          font-size: 13px !important;
-          font-weight: 600 !important;
+          background: var(--bgrd) !important; color: var(--p) !important;
+          border: none !important; border-radius: var(--rs) !important;
+          font-size: 13px !important; font-weight: 600 !important;
           font-family: 'Inter', sans-serif !important;
           cursor: pointer !important;
-          transition: background .2s, color .2s !important;
-          text-shadow: none !important;
-          box-shadow: none !important;
-          height: auto !important;
-          line-height: 1.4 !important;
-          white-space: nowrap;
+          transition: background .2s, color .2s, transform .15s !important;
+          text-shadow: none !important; box-shadow: none !important;
+          height: auto !important; line-height: 1.4 !important;
+          white-space: nowrap; text-decoration: none !important;
         }
-        .namek-wa-wrap .nw-btn:hover {
-          background: var(--nw-accent) !important;
-          color: #fff !important;
+        .namek-wa-wrap .nw-btn:hover { background: var(--acc) !important; color: #fff !important; }
+        .namek-wa-wrap .nw-btn:active { transform: scale(.97) !important; }
+        .namek-wa-wrap .nw-btn-sm { padding: 6px 12px !important; font-size: 12px !important; }
+        .namek-wa-wrap .nw-btn-save {
+          background: var(--p) !important; color: #fff !important;
+          padding: 12px 28px !important; font-size: 14px !important;
+          border-radius: var(--r) !important;
+          box-shadow: 0 4px 14px rgba(61,0,0,.18) !important;
         }
-        .namek-wa-wrap .nw-btn-primary {
-          background: var(--nw-primary) !important;
-          color: #fff !important;
-          padding: 11px 28px !important;
-          font-size: 14px !important;
-          border-radius: var(--nw-radius) !important;
-        }
-        .namek-wa-wrap .nw-btn-primary:hover {
-          background: var(--nw-primary-lt) !important;
-        }
-        .namek-wa-wrap .nw-btn-sm {
-          padding: 6px 12px !important;
-          font-size: 12px !important;
-        }
+        .namek-wa-wrap .nw-btn-save:hover { background: var(--p-lt) !important; }
 
-        /* Trigger test result */
-        .namek-trigger-result { font-size: 11px; margin-top: 4px; display: block; }
-        .namek-trigger-result.ok  { color: var(--nw-green); }
-        .namek-trigger-result.err { color: var(--nw-accent); }
+        /* Save row */
+        .nw-save-row { padding: 4px 0 24px; }
+
+        /* Trigger result */
+        .namek-trigger-result { font-size: 12px; }
+        .namek-trigger-result.ok  { color: var(--grn); }
+        .namek-trigger-result.err { color: var(--acc); }
         </style>
         <?php
     }
