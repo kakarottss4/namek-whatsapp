@@ -1,6 +1,9 @@
 # Built zip — attached to GitHub Releases, not committed
 namek-whatsapp.zip
 
+# Internal reference — not for distribution
+REFERENCE.md
+
 # macOS
 .DS_Store
 

@@ -3,7 +3,7 @@
  * Plugin Name: Namek WhatsApp
  * Plugin URI:  https://namek.co.in
  * Description: Send WhatsApp notifications automatically for WooCommerce events via Namek WhatsApp Services.
- * Version:     1.2.0
+ * Version:     1.3.0
  * Author:      Namek
  * Author URI:  https://namek.co.in
  * Requires at least: 5.8
@@ -22,12 +22,13 @@
 
 defined('ABSPATH') || exit;
 
-define('NAMEK_WA_VERSION',     '1.2.0');
+define('NAMEK_WA_VERSION',     '1.3.0');
 define('NAMEK_WA_PATH',        plugin_dir_path(__FILE__));
 define('NAMEK_WA_URL',         plugin_dir_url(__FILE__));
 define('NAMEK_WA_GITHUB_REPO', 'kakarottss4/namek-whatsapp');
 
 require_once NAMEK_WA_PATH . 'includes/class-api.php';
+require_once NAMEK_WA_PATH . 'includes/class-logger.php';
 require_once NAMEK_WA_PATH . 'includes/class-updater.php';
 require_once NAMEK_WA_PATH . 'includes/class-settings.php';
 require_once NAMEK_WA_PATH . 'includes/modules/class-woocommerce.php';
@@ -36,10 +37,27 @@ require_once NAMEK_WA_PATH . 'includes/modules/class-woocommerce.php';
 (new Namek_WA_Updater(__FILE__, NAMEK_WA_GITHUB_REPO))->init();
 
 add_action('plugins_loaded', function () {
+    Namek_WA_Logger::maybe_create_table();
     Namek_WA_Settings::init();
     if (class_exists('WooCommerce')) {
         Namek_WA_WooCommerce::init();
     }
+});
+
+// Daily cron to prune log entries older than 30 days
+add_action('namek_wa_prune_log', ['Namek_WA_Logger', 'prune']);
+if (!wp_next_scheduled('namek_wa_prune_log')) {
+    wp_schedule_event(time(), 'daily', 'namek_wa_prune_log');
+}
+
+// AJAX: clear failure log
+add_action('wp_ajax_namek_wa_clear_log', function () {
+    check_ajax_referer('namek_wa_nonce', 'nonce');
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Unauthorized');
+    }
+    Namek_WA_Logger::clear();
+    wp_send_json_success();
 });
 
 // AJAX: test send from settings page

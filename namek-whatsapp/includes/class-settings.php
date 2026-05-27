@@ -280,7 +280,75 @@ class Namek_WA_Settings {
             </div>
 
           </form>
+
+          <?php
+          $log_rows = Namek_WA_Logger::get_recent(30);
+          ?>
+
+          <!-- Failure Log -->
+          <div class="nw-card" id="namek-log-card">
+            <div class="nw-card-header nw-card-header-flex">
+              <h2 class="nw-card-title">Failure Log</h2>
+              <?php if ($log_rows): ?>
+              <button type="button" class="nw-btn nw-btn-sm" id="namek-clear-log">Clear Log</button>
+              <?php endif; ?>
+            </div>
+            <div class="nw-card-body" id="namek-log-body">
+              <?php if (!$log_rows): ?>
+              <p class="nw-log-empty">&#10003;&nbsp; No failures — all notifications are sending successfully.</p>
+              <?php else: ?>
+              <div class="nw-log-wrap">
+                <table class="nw-log-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Trigger</th>
+                      <th>Order</th>
+                      <th>Phone</th>
+                      <th>Error</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($log_rows as $row):
+                      $label = $triggers[$row->trigger_key]['label'] ?? $row->trigger_key;
+                    ?>
+                    <tr>
+                      <td class="nw-log-time"><?php echo esc_html($row->attempted_at); ?></td>
+                      <td><?php echo esc_html($label); ?></td>
+                      <td><?php echo $row->order_id ? '#' . esc_html($row->order_id) : '—'; ?></td>
+                      <td><?php echo esc_html($row->phone ?: '—'); ?></td>
+                      <td class="nw-log-err"><?php echo esc_html($row->error_message); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+              <?php endif; ?>
+            </div>
+          </div>
+
         </div>
+
+        <script>
+        (function($){
+          $('#namek-clear-log').on('click', function(){
+            if (!confirm('Clear all failure log entries?')) return;
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Clearing…');
+            $.post(namekWA.ajax_url, {
+              action: 'namek_wa_clear_log',
+              nonce:  namekWA.nonce
+            }, function(res){
+              if (res.success) {
+                $('#namek-log-body').html('<p class="nw-log-empty">&#10003;&nbsp; No failures — all notifications are sending successfully.</p>');
+                $btn.remove();
+              } else {
+                $btn.prop('disabled', false).text('Clear Log');
+              }
+            });
+          });
+        }(jQuery));
+        </script>
 
         <style>
         /* ── Tokens ──────────────────────────────────────────── */
@@ -526,6 +594,33 @@ class Namek_WA_Settings {
         .namek-trigger-result { font-size: 12px; }
         .namek-trigger-result.ok  { color: var(--grn); }
         .namek-trigger-result.err { color: var(--acc); }
+
+        /* Failure log */
+        .nw-log-empty {
+          font-size: 13px; color: var(--grn); margin: 0;
+          padding: 4px 0;
+        }
+        .nw-log-wrap { overflow-x: auto; }
+        .nw-log-table {
+          width: 100%; border-collapse: collapse;
+          font-size: 12px; color: var(--tx);
+        }
+        .nw-log-table thead th {
+          text-align: left;
+          font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px;
+          color: var(--txs);
+          padding: 6px 12px 8px;
+          border-bottom: 2px solid var(--bgr);
+        }
+        .nw-log-table tbody tr { border-bottom: 1px solid var(--bgr); }
+        .nw-log-table tbody tr:last-child { border-bottom: none; }
+        .nw-log-table tbody td {
+          padding: 9px 12px;
+          vertical-align: top;
+          line-height: 1.4;
+        }
+        .nw-log-time { white-space: nowrap; color: var(--txm); font-size: 11px; }
+        .nw-log-err  { color: var(--acc); word-break: break-word; max-width: 340px; }
         </style>
         <?php
     }

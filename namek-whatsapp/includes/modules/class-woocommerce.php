@@ -67,16 +67,22 @@ class Namek_WA_WooCommerce {
         $phone = $order->get_billing_phone();
         if (!$phone) return;
         $message = self::render(self::get_template($key), self::order_vars($order));
-        Namek_WA_API::send($phone, $message);
+        $result  = Namek_WA_API::send($phone, $message);
+        if (!$result['success']) {
+            Namek_WA_Logger::log($key, $order->get_id(), $phone, $result['error'] ?? 'Unknown error');
+        }
     }
 
-    private static function send_admin($key, $vars = []) {
+    private static function send_admin($key, $vars = [], $order_id = 0) {
         if (!self::is_enabled($key)) return;
         $phone = get_option('namek_wa_admin_phone');
         if (!$phone) return;
         $vars['{site_name}'] = get_bloginfo('name');
         $message = self::render(self::get_template($key), $vars);
-        Namek_WA_API::send($phone, $message);
+        $result  = Namek_WA_API::send($phone, $message);
+        if (!$result['success']) {
+            Namek_WA_Logger::log($key, $order_id, $phone, $result['error'] ?? 'Unknown error');
+        }
     }
 
     // ── Order status handlers ────────────────────────────────────────────────
@@ -135,7 +141,10 @@ class Namek_WA_WooCommerce {
         $vars          = self::order_vars($order);
         $vars['{note}'] = $note_text;
         $message = self::render(self::get_template('order_note'), $vars);
-        Namek_WA_API::send($phone, $message);
+        $result  = Namek_WA_API::send($phone, $message);
+        if (!$result['success']) {
+            Namek_WA_Logger::log('order_note', $order_id, $phone, $result['error'] ?? 'Unknown error');
+        }
     }
 
     // ── New customer registration ─────────────────────────────────────────────
@@ -158,7 +167,10 @@ class Namek_WA_WooCommerce {
             '{product_list}' => '', '{product_name}' => '', '{stock_qty}' => '', '{note}' => '',
         ];
         $message = self::render(self::get_template('new_customer'), $vars);
-        Namek_WA_API::send($phone, $message);
+        $result  = Namek_WA_API::send($phone, $message);
+        if (!$result['success']) {
+            Namek_WA_Logger::log('new_customer', 0, $phone, $result['error'] ?? 'Unknown error');
+        }
     }
 
     // ── Admin: new order alert ────────────────────────────────────────────────
@@ -182,7 +194,7 @@ class Namek_WA_WooCommerce {
             '{order_status}' => wc_get_order_status_name($order->get_status()),
             '{product_name}' => '', '{stock_qty}' => '', '{note}' => '',
         ];
-        self::send_admin('new_order_admin', $vars);
+        self::send_admin('new_order_admin', $vars, $order->get_id());
     }
 
     // ── Admin: low stock alert ────────────────────────────────────────────────
@@ -219,6 +231,9 @@ class Namek_WA_WooCommerce {
             '{note}' => '', '{product_name}' => '', '{stock_qty}' => '',
         ];
         $message = self::render(self::get_template('new_order_group'), $vars);
-        Namek_WA_API::send_group($group_id, $message);
+        $result  = Namek_WA_API::send_group($group_id, $message);
+        if (!$result['success']) {
+            Namek_WA_Logger::log('new_order_group', $order->get_id(), null, $result['error'] ?? 'Unknown error');
+        }
     }
 }
