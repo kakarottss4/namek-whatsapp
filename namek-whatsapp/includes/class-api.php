@@ -7,7 +7,7 @@ class Namek_WA_API {
      * Send a WhatsApp message via the Namek API.
      * Returns ['success' => true] or ['success' => false, 'error' => string].
      */
-    public static function send($phone, $message) {
+    public static function send($phone, $message, $image_url = null) {
         $endpoint = get_option('namek_wa_endpoint', '');
         $api_key  = get_option('namek_wa_api_key', '');
 
@@ -22,12 +22,17 @@ class Namek_WA_API {
 
         $url = $endpoint;
 
+        $payload = ['phone' => $phone, 'message' => $message];
+        if ($image_url) {
+            $payload['image_url'] = $image_url;
+        }
+
         $response = wp_remote_post($url, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $api_key,
                 'Content-Type'  => 'application/json',
             ],
-            'body'    => wp_json_encode(['phone' => $phone, 'message' => $message]),
+            'body'    => wp_json_encode($payload),
             'timeout' => 15,
             'sslverify' => false, // allows local/self-signed certs during development
         ]);
