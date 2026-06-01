@@ -3,7 +3,7 @@
  * Plugin Name: Namek WhatsApp
  * Plugin URI:  https://namek.co.in
  * Description: Send WhatsApp notifications automatically for WooCommerce events via Namek WhatsApp Services.
- * Version:     1.3.0
+ * Version:     1.3.1
  * Author:      Namek
  * Author URI:  https://namek.co.in
  * Requires at least: 5.8
@@ -22,7 +22,7 @@
 
 defined('ABSPATH') || exit;
 
-define('NAMEK_WA_VERSION',     '1.3.0');
+define('NAMEK_WA_VERSION',     '1.3.1');
 define('NAMEK_WA_PATH',        plugin_dir_path(__FILE__));
 define('NAMEK_WA_URL',         plugin_dir_url(__FILE__));
 define('NAMEK_WA_GITHUB_REPO', 'kakarottss4/namek-whatsapp');
